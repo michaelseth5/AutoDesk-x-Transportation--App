@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>LA Connect — Rider App Prototype</title>
+<style>
+  :root {
+    --bg: #eef0f3;
+    --page-bg: #dfe3e8;
+    --surface: #ffffff;
+    --surface-alt: #f5f6f8;
+    --text: #16202a;
+    --text-muted: #66707d;
+    --border: #e3e6eb;
+    --rail: #0B3C6B;
+    --bus: #E8720C;
+    --bus-tint: #fdeee0;
+    --rail-tint: #e7edf4;
+    --success: #1e8e5a;
+    --success-tint: #e5f4ec;
+    --shadow: 0 20px 50px rgba(15, 25, 40, 0.28);
+  }
+
+  html[data-theme="dark"] {
+    --bg: #14161a;
+    --page-bg: #0b0c0e;
+    --surface: #1c1f25;
+    --surface-alt: #23272e;
+    --text: #f2f4f7;
+    --text-muted: #9aa3b0;
+    --border: #2c313a;
+    --rail: #6ea3d6;
+    --bus: #ff9a4d;
+    --bus-tint: #3a2a1c;
+    --rail-tint: #1e2a38;
+    --success: #4fce97;
+    --success-tint: #16281f;
+    --shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 30px 12px;
+    background: var(--page-bg);
+    font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    transition: background 0.25s ease;
+  }
+
+  .phone-frame {
+    width: 380px;
+    height: 800px;
+    background: var(--bg);
+    border-radius: 40px;
+    box-shadow: var(--shadow);
+    border: 8px solid #000;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* On an actual phone this is no longer a "mockup inside a browser" —
+     drop the desktop bezel/shadow and let it fill the real viewport. */
+  @media (max-width: 500px) {
+    body { padding: 0; }
+    .phone-frame {
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .notch { display: none; }
+  }
+
+  .notch {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 22px;
+    background: #000;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+    z-index: 20;
+  }
+
+  .status-bar {
+    min-height: 40px;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: env(safe-area-inset-top) 22px 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--bg);
+  }
+
+  .screens { position: relative; flex: 1; overflow: hidden; }
+
+  .app-screen {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .app-screen.active { display: flex; }
+
+  .screen-scroll { flex: 1; overflow-y: auto; padding: 16px 18px 20px; }
+
+  .screen-header {
+    flex: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px 8px;
+    background: var(--bg);
+  }
+  .screen-header h2 { margin: 0; font-size: 17px; font-weight: 700; }
+
+  .back-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    flex: none;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .card h3 { margin: 0 0 4px; font-size: 14px; font-weight: 700; }
+  .card p { margin: 0; font-size: 12.5px; color: var(--text-muted); line-height: 1.4; }
+
+  .muted { color: var(--text-muted); }
+
+  .section-label {
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 14px 0 8px;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-primary { background: var(--bus); color: white; }
+  .btn-secondary { background: var(--rail-tint); color: var(--rail); }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  .btn:disabled { opacity: 0.5; cursor: default; }
+
+  .row { display: flex; gap: 10px; }
+  .row.between { justify-content: space-between; align-items: center; }
+  .clickable { cursor: pointer; }
+
+  /* Onboarding */
+  #screen-onboarding {
+    background: linear-gradient(160deg, var(--rail) 0%, #123a63 60%, #0a2038 100%);
+    background-size: 200% 200%;
+    animation: heroGradientShift 16s ease-in-out infinite;
+    color: white;
+    padding: 0 22px calc(26px + env(safe-area-inset-bottom));
+  }
+  html[data-theme="dark"] #screen-onboarding {
+    background: linear-gradient(160deg, #0d2338 0%, #0a1826 60%, #060d16 100%);
+    background-size: 200% 200%;
+  }
+  @keyframes heroGradientShift {
+    0%, 100% { background-position: 0% 0%; }
+    50% { background-position: 100% 100%; }
+  }
+
+  .demo-pill {
+    position: absolute;
+    top: calc(26px + env(safe-area-inset-top)); right: 18px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.9);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 5px 9px;
+    border-radius: 999px;
+    z-index: 2;
+  }
+
+  /* Hero fills whatever vertical space is left over at any real device
+     height, instead of leaving a blank gap below a fixed-size block. */
+  .onboard-hero {
+    flex: 1;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: calc(30px + env(safe-area-inset-top));
+  }
+  .hero-scene {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    max-width: 280px;
+  }
+  .hero-scene .icon { font-size: 44px; line-height: 1; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.35)); }
+  .hero-route-line {
+    flex: 1;
+    height: 3px;
+    border-radius: 2px;
+    background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.7) 0 6px, transparent 6px 16px);
+    animation: dashMove 2.2s linear infinite;
+  }
+  @keyframes dashMove {
+    to { background-position: -22px 0; }
+  }
+
+  .onboard-content { flex: none; }
+  .onboard-mark {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    margin: 0 0 14px;
+    line-height: 1.1;
+  }
+  .onboard-mark .accent { color: var(--bus); }
+  .onboard-lede { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+  .onboard-body { font-size: 13px; line-height: 1.65; color: rgba(255,255,255,0.8); margin-bottom: 28px; }
+  #screen-onboarding .btn-primary { margin-bottom: 10px; }
+  #screen-onboarding .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.35); color: white; }
+
+  /* Tab bar */
+  #tab-bar {
+    flex: none; display: flex; border-top: 1px solid var(--border); background: var(--surface);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .tab-btn {
+    flex: 1; background: none; border: none; padding: 10px 4px 12px;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    font-size: 10px; font-weight: 600; color: var(--text-muted); cursor: pointer;
+  }
+  .tab-btn .tab-icon { width: 21px; height: 21px; stroke: currentColor; }
+  .tab-btn.active { color: var(--bus); }
+
+  /* Home */
+  .home-title { font-size: 19px; font-weight: 800; margin: 2px 0 12px; }
+  .home-title .accent { color: var(--bus); }
+
+  .search-bar {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 11px 13px; margin-bottom: 6px;
+    font-size: 13px; color: var(--text-muted);
+  }
+  .location-note { font-size: 11.5px; color: var(--text-muted); margin: 6px 0 4px; }
+
+  .chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+    padding: 7px 13px; font-size: 12px; font-weight: 700; color: var(--text); cursor: pointer;
+  }
+
+  .service-row { padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .service-row:last-child { border-bottom: none; }
+  .service-top { font-size: 12.5px; font-weight: 700; margin-bottom: 2px; }
+  .service-sub { font-size: 10.5px; color: var(--text-muted); margin-bottom: 6px; }
+  .service-status-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+  .service-status { font-size: 10px; font-weight: 800; letter-spacing: 0.03em; }
+  .service-status.on-time { color: var(--success); }
+  .service-status.eta { color: var(--bus); }
+  .service-bar-track { height: 5px; border-radius: 4px; background: var(--border); overflow: hidden; }
+  .service-bar-fill { height: 100%; border-radius: 4px; }
+
+  /* Trip planner */
+  .route-mini { display: flex; gap: 14px; margin-bottom: 14px; }
+  .route-mini svg { flex: none; }
+  .picker-col { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+  .picker-row { display: flex; align-items: center; gap: 8px; }
+  .picker-dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  .picker-dot.origin { background: var(--bus); }
+  .picker-dot.dest { background: var(--rail); }
+  .picker-label { font-size: 9.5px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-muted); }
+  .picker-value { font-size: 13.5px; font-weight: 700; }
+  select.dest-select {
+    width: 100%;
+    padding: 4px 0;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-size: 13.5px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  .route-summary {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--surface-alt);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+  }
+
+  .stat-row { display: flex; gap: 8px; margin-bottom: 10px; }
+  .stat-chip {
+    flex: 1; background: var(--rail); color: white; border-radius: 12px;
+    padding: 10px 6px; text-align: center;
+  }
+  .stat-chip.alt { background: var(--surface-alt); color: var(--text); border: 1px solid var(--border); }
+  .stat-chip .stat-num { font-size: 15px; font-weight: 800; }
+  .stat-chip .stat-label {
+    font-size: 8px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+    margin-top: 2px; opacity: 0.85;
+  }
+
+  .co2-note { font-size: 11.5px; font-weight: 700; color: var(--success); margin-bottom: 14px; }
+
+  /* Live trip */
+  .live-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+    color: var(--success); margin-bottom: 10px;
+  }
+  .live-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
+
+  .progress-track { height: 6px; border-radius: 5px; background: var(--border); overflow: hidden; margin-bottom: 14px; }
+  #live-progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--rail), var(--bus)); transition: width 0.2s linear; }
+
+  .step-row { display: flex; gap: 10px; padding: 9px 0; }
+  .step-badge {
+    width: 22px; height: 22px; border-radius: 50%; flex: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10.5px; font-weight: 800; color: white;
+    background: var(--border);
+  }
+  .step-row.completed .step-badge { background: var(--success); }
+  .step-row.current .step-badge { background: var(--bus); }
+  .step-title { font-size: 12.5px; font-weight: 700; }
+  .step-sub { font-size: 10.5px; color: var(--text-muted); }
+  .step-row.current .step-title { color: var(--bus); }
+
+  .hold-alert {
+    background: var(--bus-tint);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 11.5px;
+    color: var(--text);
+    margin: 12px 0;
+    display: none;
+  }
+  .hold-alert.show { display: block; }
+
+  .transit-pass-card { text-align: center; }
+  .qr-box {
+    width: 110px; height: 110px; margin: 8px auto 10px;
+    border-radius: 12px;
+    background: repeating-linear-gradient(45deg, var(--text) 0 6px, transparent 6px 12px) 0 0/24px 24px, var(--surface);
+    border: 2px solid var(--border);
+    opacity: 0.85;
+  }
+
+  /* Rewards */
+  .rewards-hero-title { font-size: 18px; font-weight: 800; margin: 2px 0 12px; }
+  .points-card {
+    background: linear-gradient(135deg, var(--bus), #c95a02);
+    color: white; border-radius: 16px; padding: 16px; margin-bottom: 12px;
+  }
+  .points-card .pts { font-size: 26px; font-weight: 800; }
+  .streak-note { font-size: 11px; font-weight: 700; margin-top: 6px; color: rgba(255,255,255,0.92); }
+
+  .reward-list-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 0; border-bottom: 1px solid var(--border); cursor: pointer;
+  }
+  .reward-list-row:last-child { border-bottom: none; }
+  .reward-emoji {
+    width: 38px; height: 38px; border-radius: 11px;
+    background: var(--bus-tint);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex: none;
+  }
+  .reward-list-row .reward-title { font-size: 13px; font-weight: 700; }
+  .reward-list-row .reward-sub { font-size: 11px; color: var(--text-muted); }
+
+  .badge-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge-chip {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+    padding: 7px 12px; font-size: 11px; font-weight: 700;
+  }
+
+  /* Reward detail */
+  .reward-hero { background: var(--bus-tint); border-radius: 16px; padding: 26px 16px; text-align: center; margin-bottom: 14px; }
+  .reward-hero .emoji-big { font-size: 38px; margin-bottom: 8px; }
+  .redeem-code { font-family: "Courier New", monospace; font-size: 13px; letter-spacing: 2px; font-weight: 700; margin-bottom: 4px; }
+
+  /* Wallet */
+  .balance-card { background: linear-gradient(135deg, var(--rail), #0a2c50); color: white; border-radius: 16px; padding: 18px 16px; margin-bottom: 12px; }
+  .balance-card .bal { font-size: 26px; font-weight: 800; margin: 2px 0 4px; }
+  .pass-meta { font-size: 11px; color: rgba(255,255,255,0.8); }
+  .wallet-btn-row { display: flex; gap: 8px; margin-bottom: 12px; }
+  .wallet-btn-row .btn { font-size: 12.5px; padding: 10px; }
+
+  .history-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); }
+  .history-row:last-child { border-bottom: none; }
+  .history-route { font-size: 12.5px; font-weight: 700; }
+  .history-time { font-size: 10.5px; color: var(--text-muted); }
+  .history-pts { font-size: 12px; font-weight: 800; color: var(--bus); }
+
+  /* Community */
+  .post-card { display: flex; gap: 10px; }
+  .post-avatar {
+    width: 34px; height: 34px; border-radius: 50%; background: var(--rail-tint);
+    display: flex; align-items: center; justify-content: center; font-size: 16px; flex: none;
+  }
+  .post-name { font-size: 12.5px; font-weight: 700; }
+  .post-time { font-size: 10.5px; color: var(--text-muted); margin-left: 6px; font-weight: 400; }
+  .post-text { font-size: 12.5px; color: var(--text); margin-top: 3px; line-height: 1.45; }
+
+  /* Profile */
+  .profile-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+  .avatar-big {
+    width: 54px; height: 54px; border-radius: 50%; background: var(--rail); color: white;
+    display: flex; align-items: center; justify-content: center; font-size: 19px; font-weight: 800; flex: none;
+  }
+  .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .settings-row:last-child { border-bottom: none; }
+
+  .switch {
+    width: 40px; height: 23px; border-radius: 999px; background: var(--border);
+    position: relative; cursor: pointer; flex: none; transition: background 0.2s ease;
+  }
+  .switch::after {
+    content: ""; position: absolute; top: 3px; left: 3px; width: 17px; height: 17px;
+    border-radius: 50%; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.3); transition: left 0.2s ease;
+  }
+  .switch.on { background: var(--bus); }
+  .switch.on::after { left: 20px; }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <div class="notch"></div>
+  <div class="status-bar">
+    <span>9:41</span>
+    <span>🔋 100%</span>
+  </div>
+
+  <div class="screens">
+
+    <!-- 1. ONBOARDING -->
+    <div class="app-screen active" id="screen-onboarding">
+      <span class="demo-pill">Concept / Demo Data</span>
+
+      <div class="onboard-hero">
+        <div class="hero-scene">
+          <span class="icon">🚌</span>
+          <div class="hero-route-line"></div>
+          <span class="icon">🚆</span>
+        </div>
+      </div>
+
+      <div class="onboard-content">
+        <div class="onboard-mark">LA<br/><span class="accent">CONNECT</span></div>
+        <div class="onboard-lede">Your fast lane through Los Angeles.</div>
+        <div class="onboard-body">
+          Plan rail + bus trips, pay in one place, and unlock local food perks
+          when you choose transit.
+        </div>
+
+        <button class="btn btn-primary" onclick="showScreen('plan')">Plan a trip</button>
+        <button class="btn btn-outline" onclick="showScreen('rewards')">Explore rewards</button>
+      </div>
+    </div>
+
+    <!-- 2. HOME -->
+    <div class="app-screen" id="screen-home">
+      <div class="screen-scroll">
+        <div class="home-title">LA <span class="accent">CONNECT</span></div>
+
+        <div class="search-bar">🔍 Where do you want to go?</div>
+        <div class="location-note">📍 Near Culver City Station</div>
+
+        <div class="section-label">Quick destinations</div>
+        <div class="chip-row">
+          <div class="chip" onclick="quickPlan('Sepulveda Pass / UCLA Station')">UCLA / Westwood</div>
+          <div class="chip" onclick="showScreen('home')">LAX</div>
+          <div class="chip" onclick="showScreen('home')">Downtown LA</div>
+        </div>
+
+        <div class="section-label">Real-time service</div>
+        <div class="card" style="padding-top:6px; padding-bottom:2px;">
+          <div class="service-row">
+            <div class="service-top">405 Express Rail</div>
+            <div class="service-sub">All directions</div>
+            <div class="service-status-row">
+              <span class="service-status on-time">ON TIME</span>
+            </div>
+            <div class="service-bar-track"><div class="service-bar-fill" style="width:92%; background:var(--rail);"></div></div>
+          </div>
+          <div class="service-row">
+            <div class="service-top">Culver City Bus Connector</div>
+            <div class="service-sub">Feeder · Bay 2</div>
+            <div class="service-status-row">
+              <span class="service-status eta">4 MIN</span>
+            </div>
+            <div class="service-bar-track"><div class="service-bar-fill" style="width:60%; background:var(--bus);"></div></div>
+          </div>
+          <div class="service-row">
+            <div class="service-top">LAX Express Bus</div>
+            <div class="service-sub">Feeder · Bay 1</div>
+            <div class="service-status-row">
+              <span class="service-status eta">7 MIN</span>
+            </div>
+            <div class="service-bar-track"><div class="service-bar-fill" style="width:35%; background:var(--bus);"></div></div>
+          </div>
+        </div>
+
+        <div class="card clickable" onclick="showScreen('community')">
+          <div class="row between">
+            <div><h3>👥 Community</h3><p>See what riders are saying</p></div>
+            <span class="muted">›</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. TRIP PLANNER -->
+    <div class="app-screen" id="screen-plan">
+      <div class="screen-header">
+        <button class="back-btn" onclick="showScreen('home')">←</button>
+        <h2>Plan your trip</h2>
+      </div>
+      <div class="screen-scroll">
+
+        <div class="card">
+          <div class="route-mini">
+            <svg width="100%" height="210" viewBox="0 0 300 210" preserveAspectRatio="xMinYMin meet">
+              <line x1="27" y1="10" x2="27" y2="200" style="stroke:var(--rail); stroke-width:2;" />
+              <line x1="27" y1="24" x2="6" y2="46" style="stroke:var(--bus); stroke-width:2; stroke-dasharray:3,3;" />
+              <circle cx="6" cy="46" r="4.5" style="fill:var(--bus);" />
+              <circle cx="27" cy="24" r="5.5" style="fill:var(--rail); stroke:var(--surface); stroke-width:2;" />
+              <circle cx="27" cy="80" r="5.5" style="fill:var(--rail); stroke:var(--surface); stroke-width:2;" />
+              <circle cx="27" cy="144" r="5.5" style="fill:var(--rail); stroke:var(--surface); stroke-width:2;" />
+              <circle cx="27" cy="200" r="5.5" style="fill:var(--rail); stroke:var(--surface); stroke-width:2;" />
+              <text x="40" y="27" style="fill:var(--text-muted); font-size:9px; font-family:sans-serif;">LAX / Westchester</text>
+              <text x="40" y="83" style="fill:var(--text-muted); font-size:9px; font-family:sans-serif;">Culver City / Palms</text>
+              <text x="40" y="147" style="fill:var(--text-muted); font-size:9px; font-family:sans-serif;">Sepulveda Pass / UCLA</text>
+              <text x="40" y="203" style="fill:var(--text-muted); font-size:9px; font-family:sans-serif;">Sherman Oaks / Van Nuys</text>
+            </svg>
+          </div>
+
+          <div class="picker-row" style="margin-top:2px;">
+            <div class="picker-dot origin"></div>
+            <div>
+              <div class="picker-label">Origin</div>
+              <div class="picker-value">LAX / Westchester</div>
+            </div>
+          </div>
+          <div style="height:14px; border-left:2px dotted var(--border); margin-left:4px;"></div>
+          <div class="picker-row">
+            <div class="picker-dot dest"></div>
+            <div style="flex:1;">
+              <div class="picker-label">Destination</div>
+              <select id="plan-to" class="dest-select" onchange="updateRoutePreview()">
+                <option value="Culver City / Palms Station">Culver City / Palms</option>
+                <option value="Sepulveda Pass / UCLA Station">Sepulveda Pass / UCLA</option>
+                <option value="Sherman Oaks / Van Nuys Station">Sherman Oaks / Van Nuys</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="route-summary" id="rp-summary">
+          Walk 4 min → 405 Express Rail → Connector Bus
+        </div>
+
+        <div class="stat-row">
+          <div class="stat-chip">
+            <div class="stat-num" id="rp-total">13 MIN</div>
+            <div class="stat-label">Trip</div>
+          </div>
+          <div class="stat-chip alt">
+            <div class="stat-num" id="rp-car">24 MIN</div>
+            <div class="stat-label">By car</div>
+          </div>
+          <div class="stat-chip alt">
+            <div class="stat-num" id="rp-saved">11 MIN</div>
+            <div class="stat-label">Saved</div>
+          </div>
+        </div>
+
+        <div class="co2-note" id="rp-co2">You also avoid 2.8 kg CO2e on this trip.</div>
+
+        <button class="btn btn-primary" onclick="startLiveTrip()">Start trip</button>
+      </div>
+    </div>
+
+    <!-- 4. LIVE TRIP -->
+    <div class="app-screen" id="screen-live-trip">
+      <div class="screen-header">
+        <button class="back-btn" onclick="showScreen('plan')">←</button>
+        <h2>Live Trip</h2>
+      </div>
+      <div class="screen-scroll">
+        <div class="live-pill"><span class="dot"></span><span id="live-pill-text">LIVE TRIP · WESTCHESTER → UCLA</span></div>
+        <div class="progress-track"><div id="live-progress-bar"></div></div>
+
+        <div class="card" style="padding-top:6px; padding-bottom:6px;">
+          <div class="step-row completed" id="step-1">
+            <div class="step-badge">✓</div>
+            <div><div class="step-title">Walk to station</div><div class="step-sub">Completed</div></div>
+          </div>
+          <div class="step-row current" id="step-2">
+            <div class="step-badge">2</div>
+            <div><div class="step-title" id="step-2-title">Board 405 Express Rail</div><div class="step-sub">Current leg</div></div>
+          </div>
+          <div class="step-row" id="step-3">
+            <div class="step-badge">3</div>
+            <div><div class="step-title" id="step-3-title">Transfer at Sepulveda Pass</div><div class="step-sub">Next</div></div>
+          </div>
+          <div class="step-row" id="step-4">
+            <div class="step-badge">4</div>
+            <div><div class="step-title" id="step-4-title">Board Connector Bus</div><div class="step-sub">Upcoming</div></div>
+          </div>
+          <div class="step-row" id="step-5">
+            <div class="step-badge">5</div>
+            <div><div class="step-title" id="step-5-title">Arrive at destination</div><div class="step-sub">Final destination</div></div>
+          </div>
+        </div>
+
+        <div class="stat-row" style="margin-top:12px;">
+          <div class="stat-chip">
+            <div class="stat-num" id="live-rail-eta">6 MIN</div>
+            <div class="stat-label">Rail arrival</div>
+          </div>
+          <div class="stat-chip">
+            <div class="stat-num" id="live-bus-eta">14 MIN</div>
+            <div class="stat-label">Bus transfer</div>
+          </div>
+        </div>
+
+        <div class="hold-alert" id="hold-alert">
+          Your connector bus is held for 3 more minutes for arriving rail passengers.
+        </div>
+
+        <div class="card transit-pass-card">
+          <h3>Digital Transit Pass</h3>
+          <div class="qr-box"></div>
+          <p>Scan at rail and bus doors</p>
+        </div>
+
+        <button class="btn btn-outline" onclick="showScreen('home')">End Trip</button>
+      </div>
+    </div>
+
+    <!-- 5. REWARDS -->
+    <div class="app-screen" id="screen-rewards">
+      <div class="screen-header">
+        <button class="back-btn" onclick="showScreen('home')">←</button>
+        <h2>Rewards</h2>
+      </div>
+      <div class="screen-scroll">
+        <div class="rewards-hero-title">Ride more. Eat local.</div>
+
+        <div class="points-card">
+          <div style="font-size:10.5px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; opacity:0.9;">Transit Points</div>
+          <div class="pts">840</div>
+          <div class="streak-note">🔥 5-day sustainable commute streak</div>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat-chip alt"><div class="stat-num">12</div><div class="stat-label">Trips / mo</div></div>
+          <div class="stat-chip alt"><div class="stat-num">42</div><div class="stat-label">Mi not driven</div></div>
+          <div class="stat-chip alt"><div class="stat-num">31</div><div class="stat-label">Kg CO2e saved</div></div>
+        </div>
+
+        <div class="section-label">Local rewards</div>
+        <div class="card" style="padding-top:2px; padding-bottom:2px;">
+          <div class="reward-list-row" onclick="openReward('westchester-coffee')">
+            <div class="reward-emoji">☕</div>
+            <div style="flex:1;"><div class="reward-title">Free coffee at Westside Brew</div><div class="reward-sub">250 points</div></div>
+            <span class="muted">›</span>
+          </div>
+          <div class="reward-list-row" onclick="openReward('palms-taqueria')">
+            <div class="reward-emoji">🌮</div>
+            <div style="flex:1;"><div class="reward-title">15% off at Palms Taqueria</div><div class="reward-sub">350 points</div></div>
+            <span class="muted">›</span>
+          </div>
+          <div class="reward-list-row" onclick="openReward('van-nuys-noodles')">
+            <div class="reward-emoji">🍜</div>
+            <div style="flex:1;"><div class="reward-title">BOGO entrée at Van Nuys Noodles</div><div class="reward-sub">500 points</div></div>
+            <span class="muted">›</span>
+          </div>
+          <div class="reward-list-row" onclick="openReward('ucla-restaurants')">
+            <div class="reward-emoji">🍽️</div>
+            <div style="flex:1;"><div class="reward-title">20% off UCLA-area restaurants</div><div class="reward-sub">Rail rider exclusive</div></div>
+            <span class="muted">›</span>
+          </div>
+        </div>
+
+        <div class="section-label">Badges</div>
+        <div class="badge-row">
+          <div class="badge-chip">🚆 405 Explorer</div>
+          <div class="badge-chip">🌱 Car-Free Week</div>
+          <div class="badge-chip">📍 Local Champion</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. REWARD DETAIL -->
+    <div class="app-screen" id="screen-reward-detail">
+      <div class="screen-header">
+        <button class="back-btn" onclick="showScreen('rewards')">←</button>
+        <h2>Reward</h2>
+      </div>
+      <div class="screen-scroll">
+        <div class="reward-hero">
+          <div class="emoji-big" id="rd-emoji">☕</div>
+          <h3 id="rd-title" style="font-size:16px;">Free Coffee</h3>
+          <p id="rd-business">Westside Brew</p>
+        </div>
+        <div class="card"><p id="rd-description">Show this code at checkout to redeem your reward.</p></div>
+        <div class="card" style="text-align:center;">
+          <div class="qr-box"></div>
+          <div class="redeem-code" id="rd-code">LA-9F42-CONNECT</div>
+          <p class="muted" style="font-size:11px;">Expires in 24 hours</p>
+        </div>
+        <button class="btn btn-primary" id="rd-redeem-btn" onclick="redeemReward()">Redeem Now</button>
+      </div>
+    </div>
+
+    <!-- 7. WALLET -->
+    <div class="app-screen" id="screen-wallet">
+      <div class="screen-scroll">
+        <div class="screen-header" style="padding-left:0; padding-right:0;"><h2>Wallet</h2></div>
+
+        <div class="balance-card">
+          <div style="font-size:10.5px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase; opacity:0.85;">LA Connect Pass</div>
+          <div class="bal">$24.50</div>
+          <div class="pass-meta">Stored value · 6 weekly transfers remaining</div>
+        </div>
+
+        <div class="wallet-btn-row">
+          <button class="btn btn-outline"> Apple Pay</button>
+          <button class="btn btn-outline">+ Add card</button>
+        </div>
+
+        <div class="section-label">Recent trips</div>
+        <div class="card" style="padding-top:2px; padding-bottom:2px;">
+          <div class="history-row">
+            <div><div class="history-route">Westchester → UCLA</div><div class="history-time">Today, 8:12 AM</div></div>
+            <div class="history-pts">+40 pts</div>
+          </div>
+          <div class="history-row">
+            <div><div class="history-route">Culver City → Mar Vista</div><div class="history-time">Yesterday, 6:40 PM</div></div>
+            <div class="history-pts">+25 pts</div>
+          </div>
+          <div class="history-row">
+            <div><div class="history-route">Sepulveda Pass → Brentwood</div><div class="history-time">Mon, 9:02 AM</div></div>
+            <div class="history-pts">+30 pts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. COMMUNITY -->
+    <div class="app-screen" id="screen-community">
+      <div class="screen-header">
+        <button class="back-btn" onclick="showScreen('home')">←</button>
+        <h2>Community</h2>
+      </div>
+      <div class="screen-scroll">
+        <div class="card post-card">
+          <div class="post-avatar">🚆</div>
+          <div><span class="post-name">Jordan M.<span class="post-time">2h ago</span></span>
+          <div class="post-text">Transfer at Sepulveda Pass/UCLA is so smooth now — timed it perfectly with the Brentwood bus.</div></div>
+        </div>
+        <div class="card post-card">
+          <div class="post-avatar">🏪</div>
+          <div><span class="post-name">Palms Bakery<span class="post-time">5h ago</span></span>
+          <div class="post-text">New riders welcome! Show your LA Connect app for a free pastry with any coffee this week.</div></div>
+        </div>
+        <div class="card post-card">
+          <div class="post-avatar">🚌</div>
+          <div><span class="post-name">Priya S.<span class="post-time">1d ago</span></span>
+          <div class="post-text">The Van Nuys feeder bus saved me 20 minutes versus driving on the 405 this morning.</div></div>
+        </div>
+        <div class="card post-card">
+          <div class="post-avatar">🌳</div>
+          <div><span class="post-name">Mar Vista Market<span class="post-time">2d ago</span></span>
+          <div class="post-text">Thanks to everyone riding in from Culver City/Palms — local sales are up since the feeder launched!</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9. PROFILE -->
+    <div class="app-screen" id="screen-profile">
+      <div class="screen-header"><h2>Profile</h2></div>
+      <div class="screen-scroll">
+        <div class="profile-head">
+          <div class="avatar-big">AR</div>
+          <div><div style="font-weight:800; font-size:15px;">Alex Rivera</div><div class="muted" style="font-size:12px;">Member since 2026</div></div>
+        </div>
+        <div class="card">
+          <div class="settings-row"><span>🌙 Dark Mode</span><div class="switch" id="dark-mode-switch" onclick="toggleDarkMode()"></div></div>
+          <div class="settings-row"><span>🔔 Notifications</span><div class="switch on"></div></div>
+          <div class="settings-row"><span>📍 Saved Stations</span><span class="muted">2 saved</span></div>
+          <div class="settings-row" style="border-bottom:none;"><span>🚪 Sign Out</span><span class="muted">›</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="tab-bar">
+    <button class="tab-btn active" data-screen="home" onclick="showScreen('home')">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 11.3L12 4l8 7.3V19a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1v-7.7z"/>
+      </svg>
+      Home
+    </button>
+    <button class="tab-btn" data-screen="plan" onclick="showScreen('plan')">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="8.5"/>
+        <path d="M14.8 9.2l-2 5.6-5.6 2 2-5.6z" stroke-linejoin="round"/>
+      </svg>
+      Trips
+    </button>
+    <button class="tab-btn" data-screen="rewards" onclick="showScreen('rewards')">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="4" y="10" width="16" height="9" rx="1"/>
+        <path d="M3.5 7.5h17v3h-17z"/>
+        <path d="M12 7.5V19"/>
+        <path d="M12 7.5c-1-3.2-6-3.4-6-0.6 0 1 1 0.6 6 0.6z" stroke-linejoin="round"/>
+        <path d="M12 7.5c1-3.2 6-3.4 6-0.6 0 1-1 0.6-6 0.6z" stroke-linejoin="round"/>
+      </svg>
+      Rewards
+    </button>
+    <button class="tab-btn" data-screen="wallet" onclick="showScreen('wallet')">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 7.2A2.2 2.2 0 0 1 6.2 5h10.6A1.2 1.2 0 0 1 18 6.2V8h1a2 2 0 0 1 2 2v6.8A2.2 2.2 0 0 1 18.8 19H6.2A2.2 2.2 0 0 1 4 16.8z" stroke-linejoin="round"/>
+        <circle cx="16.4" cy="13" r="1.15" fill="currentColor" stroke="none"/>
+      </svg>
+      Wallet
+    </button>
+    <button class="tab-btn" data-screen="profile" onclick="showScreen('profile')">
+      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8.2" r="3.4"/>
+        <path d="M5 19.5c0-3.7 3.1-6.7 7-6.7s7 3 7 6.7"/>
+      </svg>
+      Profile
+    </button>
+  </div>
+</div>
+
+<script>
+// ---------------------------------------------------------------------------
+// Screen navigation
+// ---------------------------------------------------------------------------
+
+const MAIN_TABS = ["home", "plan", "rewards", "wallet", "profile"];
+
+function showScreen(id) {
+  document.querySelectorAll(".app-screen").forEach((s) => s.classList.remove("active"));
+  document.getElementById("screen-" + id).classList.add("active");
+
+  const tabBar = document.getElementById("tab-bar");
+  tabBar.style.display = MAIN_TABS.includes(id) ? "flex" : "none";
+
+  document.querySelectorAll(".tab-btn").forEach((b) => {
+    b.classList.toggle("active", b.dataset.screen === id);
+  });
+}
+
+function quickPlan(destStationName) {
+  document.getElementById("plan-to").value = destStationName;
+  updateRoutePreview();
+  showScreen("plan");
+}
+
+// ---------------------------------------------------------------------------
+// Trip planner — route preview lookup (approx, ~40mph rail assumption)
+// ---------------------------------------------------------------------------
+
+const ROUTE_PREVIEW = {
+  "Culver City / Palms Station": { short: "Culver City / Palms", railMin: 8, busName: "Palms", busMin: 4, total: 13, car: 24, co2: 2.8 },
+  "Sepulveda Pass / UCLA Station": { short: "Sepulveda Pass / UCLA", railMin: 14, busName: "UCLA / Westwood", busMin: 2, total: 17, car: 34, co2: 4.1 },
+  "Sherman Oaks / Van Nuys Station": { short: "Sherman Oaks / Van Nuys", railMin: 22, busName: "Van Nuys", busMin: 9, total: 32, car: 55, co2: 6.4 }
+};
+
+function updateRoutePreview() {
+  const dest = document.getElementById("plan-to").value;
+  const r = ROUTE_PREVIEW[dest];
+  const saved = r.car - r.total;
+
+  document.getElementById("rp-summary").textContent =
+    "Walk 4 min → 405 Express Rail → " + r.busName + " Connector Bus";
+  document.getElementById("rp-total").textContent = r.total + " MIN";
+  document.getElementById("rp-car").textContent = r.car + " MIN";
+  document.getElementById("rp-saved").textContent = saved + " MIN";
+  document.getElementById("rp-co2").textContent = "You also avoid " + r.co2.toFixed(1) + " kg CO2e on this trip.";
+}
+
+// ---------------------------------------------------------------------------
+// Live trip — compressed demo animation with a 5-step itinerary
+// ---------------------------------------------------------------------------
+
+let liveTimer = null;
+
+function setStepState(stepNum, state) {
+  const el = document.getElementById("step-" + stepNum);
+  el.classList.remove("completed", "current");
+  if (state) el.classList.add(state);
+  const badge = el.querySelector(".step-badge");
+  badge.textContent = state === "completed" ? "✓" : String(stepNum);
+}
+
+function startLiveTrip() {
+  const dest = document.getElementById("plan-to").value;
+  const r = ROUTE_PREVIEW[dest];
+
+  document.getElementById("live-pill-text").textContent =
+    "LIVE TRIP · LAX/WESTCHESTER → " + r.short.toUpperCase();
+  document.getElementById("step-3-title").textContent = "Transfer at " + r.short.split(" / ")[0];
+  document.getElementById("step-4-title").textContent = "Board " + r.busName + " Connector Bus";
+  document.getElementById("step-5-title").textContent = "Arrive at " + r.busName;
+  document.getElementById("live-rail-eta").textContent = r.railMin + " MIN";
+  document.getElementById("live-bus-eta").textContent = r.busMin + " MIN";
+
+  showScreen("live-trip");
+
+  clearInterval(liveTimer);
+  const totalMs = 16000;
+  const railPortion = 0.55;
+  const transferPortion = 0.12;
+  const startTime = Date.now();
+
+  const barEl = document.getElementById("live-progress-bar");
+  const holdEl = document.getElementById("hold-alert");
+
+  liveTimer = setInterval(() => {
+    const elapsed = Date.now() - startTime;
+    const t = Math.min(elapsed / totalMs, 1);
+    barEl.style.width = (t * 100) + "%";
+
+    if (t < railPortion) {
+      setStepState(1, "completed");
+      setStepState(2, "current");
+      setStepState(3, null);
+      setStepState(4, null);
+      setStepState(5, null);
+      holdEl.classList.remove("show");
+    } else if (t < railPortion + transferPortion) {
+      setStepState(1, "completed");
+      setStepState(2, "completed");
+      setStepState(3, "current");
+      setStepState(4, null);
+      setStepState(5, null);
+      holdEl.classList.add("show");
+    } else if (t < 1) {
+      setStepState(1, "completed");
+      setStepState(2, "completed");
+      setStepState(3, "completed");
+      setStepState(4, "current");
+      setStepState(5, null);
+      holdEl.classList.remove("show");
+    } else {
+      setStepState(1, "completed");
+      setStepState(2, "completed");
+      setStepState(3, "completed");
+      setStepState(4, "completed");
+      setStepState(5, "completed");
+      holdEl.classList.remove("show");
+      clearInterval(liveTimer);
+    }
+  }, 200);
+}
+
+// ---------------------------------------------------------------------------
+// Rewards -> reward detail
+// ---------------------------------------------------------------------------
+
+const REWARDS = {
+  "westchester-coffee": { emoji: "☕", title: "Free Coffee", business: "Westside Brew", code: "LA-9F42-CONNECT",
+    description: "Show this code at checkout to redeem your reward. Valid for riders who transferred through Westchester within the last 24 hours." },
+  "palms-taqueria": { emoji: "🌮", title: "15% Off", business: "Palms Taqueria", code: "LA-3C81-CONNECT",
+    description: "15% off your order when you show this code. Valid for riders arriving via the Palms feeder route." },
+  "van-nuys-noodles": { emoji: "🍜", title: "BOGO Entrée", business: "Van Nuys Noodles", code: "LA-7A26-CONNECT",
+    description: "Buy one entrée, get one free. Valid for riders arriving via the Van Nuys feeder route." },
+  "ucla-restaurants": { emoji: "🍽️", title: "20% Off", business: "UCLA-Area Restaurants", code: "LA-5E19-CONNECT",
+    description: "20% off at participating UCLA-area restaurants — a rail rider exclusive." }
+};
+
+function openReward(id) {
+  const r = REWARDS[id];
+  document.getElementById("rd-emoji").textContent = r.emoji;
+  document.getElementById("rd-title").textContent = r.title;
+  document.getElementById("rd-business").textContent = r.business;
+  document.getElementById("rd-description").textContent = r.description;
+  document.getElementById("rd-code").textContent = r.code;
+
+  const btn = document.getElementById("rd-redeem-btn");
+  btn.textContent = "Redeem Now";
+  btn.disabled = false;
+
+  showScreen("reward-detail");
+}
+
+function redeemReward() {
+  const btn = document.getElementById("rd-redeem-btn");
+  btn.textContent = "✓ Redeemed";
+  btn.disabled = true;
+}
+
+// ---------------------------------------------------------------------------
+// Dark mode
+// ---------------------------------------------------------------------------
+
+function toggleDarkMode() {
+  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+  document.documentElement.setAttribute("data-theme", isDark ? "light" : "dark");
+  document.getElementById("dark-mode-switch").classList.toggle("on", !isDark);
+}
+
+// ---------------------------------------------------------------------------
+// Init
+// ---------------------------------------------------------------------------
+
+updateRoutePreview();
+showScreen("onboarding");
+</script>
+
+</body>
+</html>
