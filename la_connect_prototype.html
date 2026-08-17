@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>LA Connect — Rider App Prototype</title>
+<title>LA Connect — Sepulveda + C Line</title>
 <style>
   :root {
     --bg: #eef0f3;
@@ -19,6 +19,10 @@
     --rail-tint: #e7edf4;
     --success: #1e8e5a;
     --success-tint: #e5f4ec;
+    --legacy: #1F9D6B;
+    --legacy-tint: #e3f4ec;
+    --existing: #8A8D91;
+    --existing-tint: #eceded;
     --shadow: 0 20px 50px rgba(15, 25, 40, 0.28);
   }
 
@@ -36,6 +40,10 @@
     --rail-tint: #1e2a38;
     --success: #4fce97;
     --success-tint: #16281f;
+    --legacy: #34c491;
+    --legacy-tint: #123227;
+    --existing: #a2a5a9;
+    --existing-tint: #24262a;
     --shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
   }
 
@@ -260,6 +268,20 @@
   #screen-onboarding .btn-primary { margin-bottom: 10px; }
   #screen-onboarding .btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.35); color: white; }
 
+  .legacy-tagline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #eafff5;
+    background: rgba(31, 157, 107, 0.28);
+    border: 1px solid rgba(52, 196, 145, 0.55);
+    border-radius: 999px;
+    padding: 6px 12px;
+    margin-bottom: 18px;
+  }
+
   /* Tab bar */
   #tab-bar {
     flex: none; display: flex; border-top: 1px solid var(--border); background: var(--surface);
@@ -284,6 +306,12 @@
     font-size: 13px; color: var(--text-muted);
   }
   .location-note { font-size: 11.5px; color: var(--text-muted); margin: 6px 0 4px; }
+  .lax-gateway-note {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10.5px; font-weight: 800; letter-spacing: 0.02em;
+    color: var(--rail); background: var(--rail-tint);
+    border-radius: 999px; padding: 4px 10px; margin: 2px 0 10px;
+  }
 
   .chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
   .chip {
@@ -347,6 +375,54 @@
   }
 
   .co2-note { font-size: 11.5px; font-weight: 700; color: var(--success); margin-bottom: 14px; }
+
+  .network-key {
+    display: flex;
+    gap: 14px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin: -6px 0 12px;
+  }
+  .network-key .key-item { display: flex; align-items: center; gap: 5px; }
+  .network-key .key-dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .network-key .key-dot.games { background: var(--existing); }
+  .network-key .key-dot.legacy { background: var(--legacy); }
+
+  .phase-tag {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 999px;
+    margin-left: 6px;
+  }
+  .phase-tag.existing { background: var(--existing-tint); color: var(--existing); }
+  .phase-tag.new { background: var(--legacy-tint); color: var(--legacy); }
+
+  /* Trip option cards — Rail + Bus vs Rail + Rideshare, tap to compare */
+  .trip-option-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+  .trip-option-card {
+    flex: 1; background: var(--surface-alt); border: 1.5px solid var(--border); border-radius: 12px;
+    padding: 9px 10px; cursor: pointer; text-align: left;
+  }
+  .trip-option-card.selected { background: var(--rail-tint); border-color: var(--rail); }
+  .trip-option-card .trip-option-label { font-size: 11.5px; font-weight: 800; margin-bottom: 3px; }
+  .trip-option-card .trip-option-stats { font-size: 12.5px; font-weight: 700; color: var(--text); }
+  .trip-option-card .trip-option-stats .stat-sep { color: var(--text-muted); font-weight: 400; margin: 0 4px; }
+
+  /* Rideshare sync module (Wallet) */
+  .rideshare-sync-row { display: flex; gap: 14px; margin: 8px 0 12px; }
+  .rideshare-chip { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--text); }
+  .chip-circle {
+    width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 12px; font-weight: 800; flex: none;
+  }
+  .chip-circle.uber { background: var(--rail); }
+  .chip-circle.lyft { background: var(--bus); }
+  .waymo-caption { font-size: 10px; color: var(--text-muted); font-style: italic; margin-top: 8px; }
 
   /* Live trip */
   .live-pill {
@@ -495,11 +571,13 @@
 
       <div class="onboard-content">
         <div class="onboard-mark">LA<br/><span class="accent">CONNECT</span></div>
-        <div class="onboard-lede">Your fast lane through Los Angeles.</div>
+        <div class="onboard-lede">Your fast lane through Los Angeles — starting at LAX.</div>
         <div class="onboard-body">
           Plan rail + bus trips, pay in one place, and unlock local food perks
           when you choose transit.
         </div>
+
+        <div class="legacy-tagline">🚆 Built on LA's real rail network — connecting what exists to what's next.</div>
 
         <button class="btn btn-primary" onclick="showScreen('plan')">Plan a trip</button>
         <button class="btn btn-outline" onclick="showScreen('rewards')">Explore rewards</button>
@@ -513,18 +591,22 @@
 
         <div class="search-bar">🔍 Where do you want to go?</div>
         <div class="location-note">📍 Near Culver City Station</div>
+        <div class="lax-gateway-note">✈️ Network starting point: LAX / Westchester</div>
 
         <div class="section-label">Quick destinations</div>
         <div class="chip-row">
           <div class="chip" onclick="quickPlan('Sepulveda Pass / UCLA Station')">UCLA / Westwood</div>
-          <div class="chip" onclick="showScreen('home')">LAX</div>
-          <div class="chip" onclick="showScreen('home')">Downtown LA</div>
+          <div class="chip" onclick="showScreen('plan')">LAX</div>
+          <div class="chip" onclick="quickPlan('Long Beach Blvd')">Long Beach</div>
+          <div class="chip" onclick="quickPlan('Norwalk')">Norwalk</div>
+          <div class="chip" onclick="quickPlan('Torrance Transit Center')">Torrance</div>
+          <div class="chip" onclick="quickPlan('SoFi Stadium')">SoFi Stadium</div>
         </div>
 
         <div class="section-label">Real-time service</div>
         <div class="card" style="padding-top:6px; padding-bottom:2px;">
           <div class="service-row">
-            <div class="service-top">405 Express Rail</div>
+            <div class="service-top">Sepulveda Corridor Rail</div>
             <div class="service-sub">All directions</div>
             <div class="service-status-row">
               <span class="service-status on-time">ON TIME</span>
@@ -568,7 +650,7 @@
 
         <div class="card">
           <div class="route-mini">
-            <svg width="100%" height="210" viewBox="0 0 300 210" preserveAspectRatio="xMinYMin meet">
+            <svg width="100%" height="222" viewBox="0 0 300 222" preserveAspectRatio="xMinYMin meet">
               <line x1="27" y1="10" x2="27" y2="200" style="stroke:var(--rail); stroke-width:2;" />
               <line x1="27" y1="24" x2="6" y2="46" style="stroke:var(--bus); stroke-width:2; stroke-dasharray:3,3;" />
               <circle cx="6" cy="46" r="4.5" style="fill:var(--bus);" />
@@ -577,10 +659,21 @@
               <circle cx="27" cy="144" r="5.5" style="fill:var(--rail); stroke:var(--surface); stroke-width:2;" />
               <circle cx="27" cy="200" r="5.5" style="fill:var(--rail); stroke:var(--surface); stroke-width:2;" />
               <text x="40" y="27" style="fill:var(--text-muted); font-size:9px; font-family:sans-serif;">LAX / Westchester</text>
+              <text x="40" y="37" style="fill:var(--rail); font-size:7px; font-weight:800; letter-spacing:0.03em; font-family:sans-serif;">★ GATEWAY — START HERE</text>
               <text x="40" y="83" style="fill:var(--text-muted); font-size:9px; font-family:sans-serif;">Culver City / Palms</text>
               <text x="40" y="147" style="fill:var(--text-muted); font-size:9px; font-family:sans-serif;">Sepulveda Pass / UCLA</text>
               <text x="40" y="203" style="fill:var(--text-muted); font-size:9px; font-family:sans-serif;">Sherman Oaks / Van Nuys</text>
+              <text x="40" y="16" style="fill:var(--legacy); font-size:7.5px; font-weight:700; font-family:sans-serif;">+ 10 more via C Line (New Connector at LAX)</text>
+              <text x="40" y="216" style="fill:var(--legacy); font-size:7.5px; font-weight:700; font-family:sans-serif;">+ 5 more via Downtown LA Connector (at Culver City/Palms)</text>
             </svg>
+          </div>
+
+          <div class="network-key">
+            <div class="key-item"><span class="key-dot games"></span>Existing (Phase 0)</div>
+            <div class="key-item"><span class="key-dot legacy"></span>New Connector (Phase 2)</div>
+          </div>
+          <div class="muted" style="font-size:10.5px; margin:-6px 0 12px; line-height:1.4;">
+            Rail for long-distance. Bus for community access. Rideshare (Uber, Lyft) for the last convenient mile — all in one app.
           </div>
 
           <div class="picker-row" style="margin-top:2px;">
@@ -596,16 +689,55 @@
             <div style="flex:1;">
               <div class="picker-label">Destination</div>
               <select id="plan-to" class="dest-select" onchange="updateRoutePreview()">
-                <option value="Culver City / Palms Station">Culver City / Palms</option>
-                <option value="Sepulveda Pass / UCLA Station">Sepulveda Pass / UCLA</option>
-                <option value="Sherman Oaks / Van Nuys Station">Sherman Oaks / Van Nuys</option>
+                <optgroup label="Sepulveda Corridor — Existing / Approved">
+                  <option value="Culver City / Palms Station">Culver City / Palms</option>
+                  <option value="Sepulveda Pass / UCLA Station">Sepulveda Pass / UCLA</option>
+                  <option value="Sherman Oaks / Van Nuys Station">Sherman Oaks / Van Nuys</option>
+                </optgroup>
+                <optgroup label="C Line — via New Connector">
+                  <option value="LAX / Metro Transit Center">LAX / Metro Transit Center</option>
+                  <option value="Aviation / Century">Aviation / Century</option>
+                  <option value="Hawthorne / Lennox">Hawthorne / Lennox</option>
+                  <option value="Crenshaw">Crenshaw</option>
+                  <option value="Vermont / Athens">Vermont / Athens</option>
+                  <option value="Harbor Freeway">Harbor Freeway</option>
+                  <option value="Willowbrook / Rosa Parks">Willowbrook / Rosa Parks</option>
+                  <option value="Long Beach Blvd">Long Beach Blvd</option>
+                  <option value="Lakewood Blvd">Lakewood Blvd</option>
+                  <option value="Norwalk">Norwalk</option>
+                </optgroup>
+                <optgroup label="Downtown LA Connector — via New Connector">
+                  <option value="La Cienega / Jefferson">La Cienega / Jefferson</option>
+                  <option value="Expo / Crenshaw">Expo / Crenshaw</option>
+                  <option value="Expo Park / USC">Expo Park / USC</option>
+                  <option value="7th St / Metro Center">7th St / Metro Center</option>
+                  <option value="Downtown LA / Union Station">Downtown LA / Union Station</option>
+                </optgroup>
+                <optgroup label="Crenshaw–Expo Connector — Games-era Bus Feeder">
+                  <option value="SoFi Stadium">SoFi Stadium</option>
+                </optgroup>
+                <optgroup label="Future / Planned — Not Yet Funded">
+                  <option value="Torrance Transit Center">Torrance Transit Center</option>
+                </optgroup>
               </select>
+              <div id="dest-phase-tag"></div>
             </div>
           </div>
         </div>
 
+        <div class="trip-option-tabs" id="trip-option-tabs" style="display:none;">
+          <div class="trip-option-card selected" id="opt-card-bus" onclick="selectTripOption('bus')">
+            <div class="trip-option-label">🚌 Rail + Bus</div>
+            <div class="trip-option-stats"><span id="opt-bus-time">13 MIN</span><span class="stat-sep">·</span><span id="opt-bus-cost">$1.75</span></div>
+          </div>
+          <div class="trip-option-card" id="opt-card-rideshare" onclick="selectTripOption('rideshare')">
+            <div class="trip-option-label">🚗 Rail + Rideshare</div>
+            <div class="trip-option-stats"><span id="opt-rideshare-time">15 MIN</span><span class="stat-sep">·</span><span id="opt-rideshare-cost">$2.86</span></div>
+          </div>
+        </div>
+
         <div class="route-summary" id="rp-summary">
-          Walk 4 min → 405 Express Rail → Connector Bus
+          Walk 4 min → Sepulveda Corridor Rail → Connector Bus
         </div>
 
         <div class="stat-row">
@@ -625,7 +757,7 @@
 
         <div class="co2-note" id="rp-co2">You also avoid 2.8 kg CO2e on this trip.</div>
 
-        <button class="btn btn-primary" onclick="startLiveTrip()">Start trip</button>
+        <button class="btn btn-primary" id="start-trip-btn" onclick="startLiveTrip()">Start trip</button>
       </div>
     </div>
 
@@ -646,7 +778,7 @@
           </div>
           <div class="step-row current" id="step-2">
             <div class="step-badge">2</div>
-            <div><div class="step-title" id="step-2-title">Board 405 Express Rail</div><div class="step-sub">Current leg</div></div>
+            <div><div class="step-title" id="step-2-title">Board Sepulveda Corridor Rail</div><div class="step-sub">Current leg</div></div>
           </div>
           <div class="step-row" id="step-3">
             <div class="step-badge">3</div>
@@ -669,7 +801,7 @@
           </div>
           <div class="stat-chip">
             <div class="stat-num" id="live-bus-eta">14 MIN</div>
-            <div class="stat-label">Bus transfer</div>
+            <div class="stat-label" id="live-bus-eta-label">Bus transfer</div>
           </div>
         </div>
 
@@ -730,11 +862,21 @@
             <div style="flex:1;"><div class="reward-title">20% off UCLA-area restaurants</div><div class="reward-sub">Rail rider exclusive</div></div>
             <span class="muted">›</span>
           </div>
+          <div class="reward-list-row" onclick="openReward('watts-towers-cafe')">
+            <div class="reward-emoji">☕</div>
+            <div style="flex:1;"><div class="reward-title">Free pastry at Watts Towers Café</div><div class="reward-sub">300 points · C Line</div></div>
+            <span class="muted">›</span>
+          </div>
+          <div class="reward-list-row" onclick="openReward('compton-fresh-kitchen')">
+            <div class="reward-emoji">🥘</div>
+            <div style="flex:1;"><div class="reward-title">15% off at Compton Fresh Kitchen</div><div class="reward-sub">300 points · C Line</div></div>
+            <span class="muted">›</span>
+          </div>
         </div>
 
         <div class="section-label">Badges</div>
         <div class="badge-row">
-          <div class="badge-chip">🚆 405 Explorer</div>
+          <div class="badge-chip">🚆 Corridor Explorer</div>
           <div class="badge-chip">🌱 Car-Free Week</div>
           <div class="badge-chip">📍 Local Champion</div>
         </div>
@@ -777,6 +919,17 @@
         <div class="wallet-btn-row">
           <button class="btn btn-outline"> Apple Pay</button>
           <button class="btn btn-outline">+ Add card</button>
+        </div>
+
+        <div class="card">
+          <h3>Synced with your rideshare apps</h3>
+          <p>Book Uber or Lyft directly from LA Connect for last-mile trips.</p>
+          <div class="rideshare-sync-row">
+            <div class="rideshare-chip"><span class="chip-circle uber">U</span>Uber</div>
+            <div class="rideshare-chip"><span class="chip-circle lyft">L</span>Lyft</div>
+          </div>
+          <button class="btn btn-outline" disabled>Connect account</button>
+          <div class="waymo-caption">Waymo integration: concept-stage, not yet connected.</div>
         </div>
 
         <div class="section-label">Recent trips</div>
@@ -916,23 +1069,159 @@ function quickPlan(destStationName) {
 // Trip planner — route preview lookup (approx, ~40mph rail assumption)
 // ---------------------------------------------------------------------------
 
+// Rail + Rideshare (Uber/Lyft) — simple placeholder formula: 3-5 min pickup wait
+// (fixed at 4) + distance at ~18-22 mph (fixed at 20), fare $1.50 base + $1.20/mile.
+// Concept / Demo Data — estimates only, not real API-driven pricing.
+const BUS_FARE = 1.75; // flat placeholder local bus fare
+const RIDESHARE_PICKUP_MIN = 4;
+const RIDESHARE_MPH = 20;
+const RIDESHARE_BASE_FARE = 1.5;
+const RIDESHARE_PER_MILE = 1.2;
+
 const ROUTE_PREVIEW = {
-  "Culver City / Palms Station": { short: "Culver City / Palms", railMin: 8, busName: "Palms", busMin: 4, total: 13, car: 24, co2: 2.8 },
-  "Sepulveda Pass / UCLA Station": { short: "Sepulveda Pass / UCLA", railMin: 14, busName: "UCLA / Westwood", busMin: 2, total: 17, car: 34, co2: 4.1 },
-  "Sherman Oaks / Van Nuys Station": { short: "Sherman Oaks / Van Nuys", railMin: 22, busName: "Van Nuys", busMin: 9, total: 32, car: 55, co2: 6.4 }
+  // Sepulveda Corridor — Existing / Approved (Phase 0), reached by Phase 1 bus feeder
+  // OR, as an alternative last-mile option, Rail + Rideshare (Uber/Lyft only).
+  "Culver City / Palms Station": { short: "Culver City / Palms", phase: "existing", railMin: 8, busName: "Palms", busMin: 4, total: 13, car: 24, co2: 2.8, rideshareMin: 7, rideshareFare: 2.86 },
+  "Sepulveda Pass / UCLA Station": { short: "Sepulveda Pass / UCLA", phase: "existing", railMin: 14, busName: "UCLA / Westwood", busMin: 2, total: 17, car: 34, co2: 4.1, rideshareMin: 6, rideshareFare: 2.18 },
+  "Sherman Oaks / Van Nuys Station": { short: "Sherman Oaks / Van Nuys", phase: "existing", railMin: 22, busName: "Van Nuys", busMin: 9, total: 32, car: 55, co2: 6.4, rideshareMin: 12, rideshareFare: 4.56 },
+
+  // C Line — via the New Connector (Phase 0 + Phase 2). Direct rail, flat connector fare, no bus leg.
+  "LAX / Metro Transit Center": { short: "LAX / Metro Transit Center", phase: "new", via: "C Line", crossPoint: "at LAX", railMin: 2, total: 2, car: 4, co2: 0.2, fare: 4.25 },
+  "Aviation / Century": { short: "Aviation / Century", phase: "new", via: "C Line", crossPoint: "at LAX", railMin: 4, total: 4, car: 8, co2: 0.8, fare: 4.25 },
+  "Hawthorne / Lennox": { short: "Hawthorne / Lennox", phase: "new", via: "C Line", crossPoint: "at LAX", railMin: 7, total: 7, car: 13, co2: 1.9, fare: 4.25 },
+  "Crenshaw": { short: "Crenshaw", phase: "new", via: "C Line", crossPoint: "at LAX", railMin: 11, total: 11, car: 20, co2: 3.3, fare: 4.25 },
+  "Vermont / Athens": { short: "Vermont / Athens", phase: "new", via: "C Line", crossPoint: "at LAX", railMin: 16, total: 16, car: 29, co2: 4.7, fare: 4.25 },
+  "Harbor Freeway": { short: "Harbor Freeway", phase: "new", via: "C Line", crossPoint: "at LAX", railMin: 17, total: 17, car: 31, co2: 5.2, fare: 4.25 },
+  "Willowbrook / Rosa Parks": { short: "Willowbrook / Rosa Parks", phase: "new", via: "C Line", crossPoint: "at LAX", railMin: 21, total: 21, car: 38, co2: 6.2, fare: 4.25 },
+  "Long Beach Blvd": { short: "Long Beach Blvd", phase: "new", via: "C Line", crossPoint: "at LAX", railMin: 24, total: 24, car: 43, co2: 7.1, fare: 4.25 },
+  "Lakewood Blvd": { short: "Lakewood Blvd", phase: "new", via: "C Line", crossPoint: "at LAX", railMin: 33, total: 33, car: 58, co2: 10.1, fare: 4.25 },
+  "Norwalk": { short: "Norwalk", phase: "new", via: "C Line", crossPoint: "at LAX", railMin: 39, total: 39, car: 68, co2: 11.9, fare: 4.25 },
+
+  // Downtown LA Connector — a second new segment (Phase 0 + Phase 2), branching off
+  // Culver City / Palms. Direct rail, flat connector fare, no bus leg.
+  "La Cienega / Jefferson": { short: "La Cienega / Jefferson", phase: "new", via: "Downtown LA Connector", crossPoint: "at Culver City / Palms", railMin: 11, total: 11, car: 20, co2: 3.3, fare: 4.25 },
+  "Expo / Crenshaw": { short: "Expo / Crenshaw", phase: "new", via: "Downtown LA Connector", crossPoint: "at Culver City / Palms", railMin: 15, total: 15, car: 27, co2: 4.5, fare: 4.25 },
+  "Expo Park / USC": { short: "Expo Park / USC", phase: "new", via: "Downtown LA Connector", crossPoint: "at Culver City / Palms", railMin: 20, total: 20, car: 36, co2: 6.0, fare: 4.25 },
+  "7th St / Metro Center": { short: "7th St / Metro Center", phase: "new", via: "Downtown LA Connector", crossPoint: "at Culver City / Palms", railMin: 24, total: 24, car: 43, co2: 7.2, fare: 4.25 },
+  "Downtown LA / Union Station": { short: "Downtown LA / Union Station", phase: "new", via: "Downtown LA Connector", crossPoint: "at Culver City / Palms", railMin: 27, total: 27, car: 49, co2: 8.1, fare: 4.25 },
+
+  // Crenshaw–Expo Connector — a Games-era (Phase 1) bus feeder off the Expo/Crenshaw
+  // Downtown LA Connector station, via SoFi Stadium. Rail (New Connector, flat fare)
+  // plus a bus tail (flat Games-era bus fare, same BUS_FARE used elsewhere).
+  "SoFi Stadium": { short: "SoFi Stadium", phase: "connector-bus", railMin: 15, busMin: 17, total: 32, car: 58, co2: 7.5, connectorFare: 4.25 },
+
+  // Future / Planned (Phase 4) — not yet funded, shown for context only.
+  "Torrance Transit Center": { short: "Torrance Transit Center", phase: "future" }
 };
+
+// Rail + Bus is the default selection whenever both are offered — rideshare is
+// framed as the fallback/convenience tier, not the primary recommendation. Resets
+// to "bus" only when the destination changes, not on every re-render.
+let selectedTripOption = "bus";
+let lastPlanDest = null;
+
+function selectTripOption(mode) {
+  selectedTripOption = mode;
+  document.getElementById("opt-card-bus").classList.toggle("selected", mode === "bus");
+  document.getElementById("opt-card-rideshare").classList.toggle("selected", mode === "rideshare");
+  renderRoutePreview();
+}
 
 function updateRoutePreview() {
   const dest = document.getElementById("plan-to").value;
-  const r = ROUTE_PREVIEW[dest];
-  const saved = r.car - r.total;
+  if (dest !== lastPlanDest) {
+    selectedTripOption = "bus"; // reset to the default tier whenever the destination changes
+    lastPlanDest = dest;
+  }
+  renderRoutePreview();
+}
 
-  document.getElementById("rp-summary").textContent =
-    "Walk 4 min → 405 Express Rail → " + r.busName + " Connector Bus";
-  document.getElementById("rp-total").textContent = r.total + " MIN";
-  document.getElementById("rp-car").textContent = r.car + " MIN";
-  document.getElementById("rp-saved").textContent = saved + " MIN";
-  document.getElementById("rp-co2").textContent = "You also avoid " + r.co2.toFixed(1) + " kg CO2e on this trip.";
+function renderRoutePreview() {
+  const dest = document.getElementById("plan-to").value;
+  const r = ROUTE_PREVIEW[dest];
+  const tagEl = document.getElementById("dest-phase-tag");
+  const startBtn = document.getElementById("start-trip-btn");
+  const optionTabs = document.getElementById("trip-option-tabs");
+
+  if (r.phase === "future") {
+    optionTabs.style.display = "none";
+    tagEl.innerHTML = '<span class="phase-tag new">FUTURE</span>';
+    document.getElementById("rp-summary").textContent = "Not yet funded — shown for context only";
+    document.getElementById("rp-total").textContent = "—";
+    document.getElementById("rp-car").textContent = "—";
+    document.getElementById("rp-saved").textContent = "—";
+    document.getElementById("rp-co2").textContent =
+      "Torrance Transit Center is a possible future K Line extension — not part of this project's funded plan.";
+    startBtn.disabled = true;
+    return;
+  }
+  startBtn.disabled = false;
+
+  if (r.phase === "connector-bus") {
+    // Crenshaw–Expo Connector — rail to Expo/Crenshaw, then a Games-era bus feeder
+    // tail to SoFi Stadium. No bus-vs-rideshare choice here (that's Sepulveda-only).
+    optionTabs.style.display = "none";
+    tagEl.innerHTML = '<span class="phase-tag new">NEW</span>';
+    const saved = r.car - r.total;
+    document.getElementById("rp-summary").textContent =
+      "Walk 4 min → Sepulveda Corridor Rail → New Connector → Crenshaw–Expo Connector Bus to " + r.short;
+    document.getElementById("rp-total").textContent = r.total + " MIN";
+    document.getElementById("rp-car").textContent = r.car + " MIN";
+    document.getElementById("rp-saved").textContent = saved + " MIN";
+    document.getElementById("rp-co2").textContent =
+      "You also avoid " + r.co2.toFixed(1) + " kg CO2e on this trip. Connector fare: $" + r.connectorFare.toFixed(2) +
+      " + bus fare: $" + BUS_FARE.toFixed(2) + ".";
+    return;
+  }
+
+  if (r.phase !== "existing") {
+    // C Line / Downtown LA Connector — direct rail, no last-mile leg to compare.
+    optionTabs.style.display = "none";
+    tagEl.innerHTML = '<span class="phase-tag new">NEW</span>';
+    const saved = r.car - r.total;
+    document.getElementById("rp-summary").textContent = r.via === "C Line"
+      ? "Walk 4 min → Sepulveda Corridor Rail → New Connector → C Line to " + r.short
+      : "Walk 4 min → Sepulveda Corridor Rail → " + r.via + " to " + r.short;
+    document.getElementById("rp-total").textContent = r.total + " MIN";
+    document.getElementById("rp-car").textContent = r.car + " MIN";
+    document.getElementById("rp-saved").textContent = saved + " MIN";
+    document.getElementById("rp-co2").textContent =
+      "You also avoid " + r.co2.toFixed(1) + " kg CO2e on this trip. Flat connector fare: $" + r.fare.toFixed(2) + ".";
+    return;
+  }
+
+  // Existing / Approved (Phase 0) — two comparable last-mile options.
+  optionTabs.style.display = "flex";
+  document.getElementById("opt-card-bus").classList.toggle("selected", selectedTripOption === "bus");
+  document.getElementById("opt-card-rideshare").classList.toggle("selected", selectedTripOption === "rideshare");
+
+  tagEl.innerHTML = '<span class="phase-tag existing">EXISTING</span>';
+
+  const busTotal = r.total;
+  const rideshareTotal = r.railMin + r.rideshareMin;
+  document.getElementById("opt-bus-time").textContent = busTotal + " MIN";
+  document.getElementById("opt-bus-cost").textContent = "$" + BUS_FARE.toFixed(2);
+  document.getElementById("opt-rideshare-time").textContent = rideshareTotal + " MIN";
+  document.getElementById("opt-rideshare-cost").textContent = "$" + r.rideshareFare.toFixed(2);
+
+  if (selectedTripOption === "rideshare") {
+    const saved = r.car - rideshareTotal;
+    document.getElementById("rp-summary").textContent =
+      "Walk 4 min → Sepulveda Corridor Rail → Uber/Lyft pickup at " + r.short + " roundabout";
+    document.getElementById("rp-total").textContent = rideshareTotal + " MIN";
+    document.getElementById("rp-car").textContent = r.car + " MIN";
+    document.getElementById("rp-saved").textContent = saved + " MIN";
+    document.getElementById("rp-co2").textContent =
+      "You also avoid " + r.co2.toFixed(1) + " kg CO2e on this trip. Estimated rideshare fare: $" + r.rideshareFare.toFixed(2) + " (Uber/Lyft).";
+  } else {
+    const saved = r.car - busTotal;
+    document.getElementById("rp-summary").textContent =
+      "Walk 4 min → Sepulveda Corridor Rail → " + r.busName + " Connector Bus";
+    document.getElementById("rp-total").textContent = busTotal + " MIN";
+    document.getElementById("rp-car").textContent = r.car + " MIN";
+    document.getElementById("rp-saved").textContent = saved + " MIN";
+    document.getElementById("rp-co2").textContent = "You also avoid " + r.co2.toFixed(1) + " kg CO2e on this trip.";
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -952,14 +1241,37 @@ function setStepState(stepNum, state) {
 function startLiveTrip() {
   const dest = document.getElementById("plan-to").value;
   const r = ROUTE_PREVIEW[dest];
+  const useRideshare = r.phase === "existing" && selectedTripOption === "rideshare";
 
   document.getElementById("live-pill-text").textContent =
     "LIVE TRIP · LAX/WESTCHESTER → " + r.short.toUpperCase();
-  document.getElementById("step-3-title").textContent = "Transfer at " + r.short.split(" / ")[0];
-  document.getElementById("step-4-title").textContent = "Board " + r.busName + " Connector Bus";
-  document.getElementById("step-5-title").textContent = "Arrive at " + r.busName;
+
+  if (r.phase === "new") {
+    document.getElementById("step-3-title").textContent = "Cross the New Connector " + r.crossPoint;
+    document.getElementById("step-4-title").textContent = "Approaching " + r.short;
+    document.getElementById("step-5-title").textContent = "Arrive at " + r.short;
+    document.getElementById("live-bus-eta-label").textContent = "Connector fare";
+    document.getElementById("live-bus-eta").textContent = "$" + r.fare.toFixed(2);
+  } else if (r.phase === "connector-bus") {
+    document.getElementById("step-3-title").textContent = "Cross the New Connector at Culver City / Palms";
+    document.getElementById("step-4-title").textContent = "Crenshaw–Expo Connector bus to " + r.short;
+    document.getElementById("step-5-title").textContent = "Arrive at " + r.short;
+    document.getElementById("live-bus-eta-label").textContent = "Bus to SoFi";
+    document.getElementById("live-bus-eta").textContent = r.busMin + " MIN";
+  } else if (useRideshare) {
+    document.getElementById("step-3-title").textContent = "Transfer at " + r.short.split(" / ")[0];
+    document.getElementById("step-4-title").textContent = "Rideshare pickup at roundabout";
+    document.getElementById("step-5-title").textContent = "Arrive at " + r.busName;
+    document.getElementById("live-bus-eta-label").textContent = "Pickup ETA";
+    document.getElementById("live-bus-eta").textContent = "3 MIN";
+  } else {
+    document.getElementById("step-3-title").textContent = "Transfer at " + r.short.split(" / ")[0];
+    document.getElementById("step-4-title").textContent = "Board " + r.busName + " Connector Bus";
+    document.getElementById("step-5-title").textContent = "Arrive at " + r.busName;
+    document.getElementById("live-bus-eta-label").textContent = "Bus transfer";
+    document.getElementById("live-bus-eta").textContent = r.busMin + " MIN";
+  }
   document.getElementById("live-rail-eta").textContent = r.railMin + " MIN";
-  document.getElementById("live-bus-eta").textContent = r.busMin + " MIN";
 
   showScreen("live-trip");
 
@@ -990,14 +1302,24 @@ function startLiveTrip() {
       setStepState(3, "current");
       setStepState(4, null);
       setStepState(5, null);
-      holdEl.classList.add("show");
+      if (r.phase === "new" || r.phase === "connector-bus" || useRideshare) {
+        holdEl.classList.remove("show");
+      } else {
+        holdEl.textContent = "Your connector bus is held for 3 more minutes for arriving rail passengers.";
+        holdEl.classList.add("show");
+      }
     } else if (t < 1) {
       setStepState(1, "completed");
       setStepState(2, "completed");
       setStepState(3, "completed");
       setStepState(4, "current");
       setStepState(5, null);
-      holdEl.classList.remove("show");
+      if (useRideshare) {
+        holdEl.textContent = "Your Lyft is 3 min away";
+        holdEl.classList.add("show");
+      } else {
+        holdEl.classList.remove("show");
+      }
     } else {
       setStepState(1, "completed");
       setStepState(2, "completed");
@@ -1022,7 +1344,11 @@ const REWARDS = {
   "van-nuys-noodles": { emoji: "🍜", title: "BOGO Entrée", business: "Van Nuys Noodles", code: "LA-7A26-CONNECT",
     description: "Buy one entrée, get one free. Valid for riders arriving via the Van Nuys feeder route." },
   "ucla-restaurants": { emoji: "🍽️", title: "20% Off", business: "UCLA-Area Restaurants", code: "LA-5E19-CONNECT",
-    description: "20% off at participating UCLA-area restaurants — a rail rider exclusive." }
+    description: "20% off at participating UCLA-area restaurants — a rail rider exclusive." },
+  "watts-towers-cafe": { emoji: "☕", title: "Free Pastry", business: "Watts Towers Café", code: "LA-8K21-CONNECT",
+    description: "One free pastry with any drink purchase. Valid for riders arriving via the C Line near Willowbrook / Rosa Parks." },
+  "compton-fresh-kitchen": { emoji: "🥘", title: "15% Off", business: "Compton Fresh Kitchen", code: "LA-4M76-CONNECT",
+    description: "15% off your order when you show this code. Valid for riders arriving via the C Line at Compton." }
 };
 
 function openReward(id) {
